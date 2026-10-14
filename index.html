@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Systems & Habit Tracker</title>
+
+    <!-- Mobile App Icon & Theme Setup -->
+    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="apple-touch-icon" href="icon.png">
+    <meta name="theme-color" content="#000000">
+
+    <!-- Fonts & External Libraries -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #000000;
+            --card-bg: #0a0a0c;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc;
+            --text-muted: #71717a;
+            --accent-green: #22c55e;
+            --accent-pink: #ec4899;
+            --accent-orange: #f97316;
+            --accent-yellow: #eab308;
+            --accent-blue: #3b82f6;
+            --accent-purple: #a855f7;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            background: linear-gradient(to right, #38bdf8, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        /* Quote / Affirmation Box */
+        .quote-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 15px 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .quote-box p {
+            font-size: 0.95rem;
+            color: #38bdf8;
+            font-weight: 500;
+        }
+
+        /* Add Task Form */
+        .add-task-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .add-task-input {
+            flex: 1;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .add-task-input:focus {
+            border-color: #38bdf8;
+        }
+
+        .add-task-btn {
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            border: none;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .add-task-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Analytics Dashboard */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 18px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .stat-card .value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* Systems Section */
+        .systems-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .system-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .system-card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .system-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .system-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .delete-btn {
+            background: transparent;
+            border: none;
+            color: #ef4444;
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        .delete-btn:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        /* 30 Days Grid */
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+        }
+
+        .day-box {
+            background: #121216;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 2px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .day-box:hover {
+            border-color: #38bdf8;
+            transform: translateY(-2px);
+        }
+
+        .day-box .day-num {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-bottom: 2px;
+        }
+
+        .day-box .day-status {
+            font-size: 0.85rem;
+        }
+
+        .day-box.completed {
+            background: rgba(34, 197, 94, 0.15);
+            border-color: var(--accent-green);
+            animation: pulseCheck 0.4s ease;
+        }
+
+        .day-box.completed .day-status {
+            color: var(--accent-green);
+            font-weight: bold;
+        }
+
+        @keyframes pulseCheck {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+
+        .color-0 .dot { background-color: var(--accent-green); }
+        .color-1 .dot { background-color: var(--accent-pink); }
+        .color-2 .dot { background-color: var(--accent-orange); }
+        .color-3 .dot { background-color: var(--accent-yellow); }
+        .color-4 .dot { background-color: var(--accent-blue); }
+        .color-5 .dot { background-color: var(--accent-purple); }
+
+        #toast {
+            visibility: hidden;
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            z-index: 1000;
+            transition: opacity 0.3s, bottom 0.3s;
+        }
+
+        #toast.show {
+            visibility: visible;
+            bottom: 50px;
+        }
+
+        .footer-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 35px;
+        }
+
+        .action-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            border-color: #38bdf8;
+            color: #38bdf8;
+        }
+
+        .reset-btn:hover {
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 40px;
+            border: 1px dashed var(--border-color);
+            border-radius: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>MY Task</h1>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Consistency is the key to mastery.</p>
+        </header>
+
+        <div class="quote-box">
+            <p>✨ "Today is Best. I am in Discipline. I am Focused. I will complete all the Tasks today."</p>
+        </div>
+
+        <!-- Add Custom Task Section -->
+        <div class="add-task-container">
+            <input type="text" id="newTaskInput" class="add-task-input" placeholder="+ Add a new habit or system task..." onkeypress="handleKeyPress(event)">
+            <button class="add-task-btn" onclick="addNewTask()">Add System</button>
+        </div>
+
+        <!-- Analytics Dashboard -->
+        <div class="analytics-grid">
+            <div class="stat-card">
+                <h3>Total Done</h3>
+                <div class="value" id="totalDone">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Completion Rate</h3>
+                <div class="value" id="completionRate">0%</div>
+            </div>
+            <div class="stat-card">
+                <h3>Consistency Streak</h3>
+                <div class="value" id="streakCount">0 Days</div>
+            </div>
+        </div>
+
+        <!-- Systems List -->
+        <div class="systems-container" id="systemsContainer"></div>
+
+        <div class="footer-actions">
+            <button class="action-btn reset-btn" onclick="resetData()">Reset All Data</button>
+        </div>
+    </div>
+
+    <div id="toast">🔥 Great job! Keep pushing forward!</div>
+
+    <script>
+        const TOTAL_DAYS = 30;
+
+        // Custom task list saved per user/device
+        let systems = JSON.parse(localStorage.getItem('dynamic_systems_list_v1')) || [];
+        let trackerData = JSON.parse(localStorage.getItem('dynamic_tracker_data_v1')) || {};
+
+        const motivationQuotes = [
+            "🔥 Amazing progress! Discipline beats motivation every single time.",
+            "🚀 Fantastic! You're one step closer to achieving your goals!",
+            "⭐ Boom! Systems executed successfully. Keep the momentum going!",
+            "🎯 Outstanding focus! Consistency is your superpower.",
+            "💪 Great discipline today! Nothing can stop you now."
+        ];
+
+        function saveToStorage() {
+            localStorage.setItem('dynamic_systems_list_v1', JSON.stringify(systems));
+            localStorage.setItem('dynamic_tracker_data_v1', JSON.stringify(trackerData));
+        }
+
+        function initApp() {
+            const container = document.getElementById('systemsContainer');
+            container.innerHTML = '';
+
+            if (systems.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <p>No tasks added yet. Type your first habit above and click "Add System"!</p>
+                    </div>
+                `;
+                updateAnalytics();
+                return;
+            }
+
+            systems.forEach((sys, index) => {
+                if (!trackerData[sys.id] || trackerData[sys.id].length !== TOTAL_DAYS) {
+                    trackerData[sys.id] = Array(TOTAL_DAYS).fill(false);
+                }
+
+                let colorClass = `color-${index % 6}`;
+                let card = document.createElement('div');
+                card.className = `system-card ${colorClass}`;
+
+                let headerHTML = `
+                    <div class="system-header">
+                        <div class="system-title">
+                            <span class="dot"></span>
+                            ${sys.name}
+                        </div>
+                        <button class="delete-btn" onclick="deleteTask('${sys.id}')" title="Delete Task">✕</button>
+                    </div>
+                `;
+
+                let gridHTML = `<div class="days-grid">`;
+                for (let i = 0; i < TOTAL_DAYS; i++) {
+                    let isCompleted = trackerData[sys.id][i];
+                    gridHTML += `
+                        <div class="day-box ${isCompleted ? 'completed' : ''}" onclick="toggleDay('${sys.id}', ${i})">
+                            <div class="day-num">D${i+1}</div>
+                            <div class="day-status">${isCompleted ? '✓' : '·'}</div>
+                        </div>
+                    `;
+                }
+                gridHTML += `</div>`;
+
+                card.innerHTML = headerHTML + gridHTML;
+                container.appendChild(card);
+            });
+
+            updateAnalytics();
+        }
+
+        function addNewTask() {
+            const input = document.getElementById('newTaskInput');
+            const taskName = input.value.trim();
+
+            if (taskName === '') return;
+
+            const newId = 'sys_' + Date.now();
+            systems.push({ id: newId, name: taskName });
+            trackerData[newId] = Array(TOTAL_DAYS).fill(false);
+
+            saveToStorage();
+            input.value = '';
+            initApp();
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') {
+                addNewTask();
+            }
+        }
+
+        function deleteTask(sysId) {
+            if (confirm('Kya aap is task ko remove karna chahte hain?')) {
+                systems = systems.filter(sys => sys.id !== sysId);
+                delete trackerData[sysId];
+                saveToStorage();
+                initApp();
+            }
+        }
+
+        function toggleDay(sysId, dayIndex) {
+            let currentState = trackerData[sysId][dayIndex];
+            trackerData[sysId][dayIndex] = !currentState;
+            saveToStorage();
+
+            if (!currentState) {
+                triggerCelebration();
+            }
+
+            initApp();
+        }
+
+        function triggerCelebration() {
+            confetti({
+                particleCount: 80,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+
+            const toast = document.getElementById('toast');
+            const randomQuote = motivationQuotes[Math.floor(Math.random() * motivationQuotes.length)];
+            toast.innerText = randomQuote;
+            toast.className = 'show';
+            setTimeout(() => {
+                toast.className = '';
+            }, 3000);
+        }
+
+        function updateAnalytics() {
+            let totalBoxes = systems.length * TOTAL_DAYS;
+            let doneCount = 0;
+
+            if (totalBoxes === 0) {
+                document.getElementById('totalDone').innerText = 0;
+                document.getElementById('completionRate').innerText = '0%';
+                document.getElementById('streakCount').innerText = '0 Days';
+                return;
+            }
+
+            Object.keys(trackerData).forEach(sysId => {
+                if (systems.some(s => s.id === sysId)) {
+                    trackerData[sysId].forEach(val => {
+                        if (val) doneCount++;
+                    });
+                }
+            });
+
+            let percentage = Math.round((doneCount / totalBoxes) * 100);
+            let estimatedStreak = Math.floor(doneCount / (systems.length || 1));
+
+            document.getElementById('totalDone').innerText = doneCount;
+            document.getElementById('completionRate').innerText = percentage + '%';
+            document.getElementById('streakCount').innerText = estimatedStreak + ' Days';
+        }
+
+        function resetData() {
+            if (confirm('Kya aap saara data aur tasks reset karna chahte hain?')) {
+                localStorage.removeItem('dynamic_systems_list_v1');
+                localStorage.removeItem('dynamic_tracker_data_v1');
+                systems = [];
+                trackerData = {};
+                initApp();
+            }
+        }
+
+        initApp();
+    </script>
+</body>
+</html>
